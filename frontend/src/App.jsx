@@ -145,6 +145,23 @@ function App() {
       </>
     )}
 
+    {graphResult.number_of_vertices !== undefined && (
+      <>
+        <h3>Graph Summary</h3>
+        <div
+          style={{
+            background: "#f4f4f4",
+            padding: "15px",
+            borderRadius: "8px",
+            marginBottom: "20px",
+          }}
+        >
+          <p><strong>Vertices:</strong> {graphResult.number_of_vertices}</p>
+          <p><strong>Edges:</strong> {graphResult.number_of_edges}</p>
+        </div>
+      </>
+    )}
+
     <h3>Backend Response</h3>
     <pre
       style={{
