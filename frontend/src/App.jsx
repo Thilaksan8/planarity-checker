@@ -15,26 +15,38 @@ function App() {
     }
   };
 
-  const parseEdges = (text) => {
+   const parseEdges = (text) => {
     const lines = text.split("\n");
     const edges = [];
+    const errors = [];
 
-    for (const line of lines) {
+    lines.forEach((line, index) => {
       const trimmed = line.trim();
-      if (!trimmed) continue;
+      if (!trimmed) return;
 
       const parts = trimmed.split(/\s+/);
-      if (parts.length === 2) {
-        edges.push(parts);
+
+      if (parts.length !== 2) {
+        errors.push(`Invalid line ${index + 1}: ${line}`);
+        return;
       }
-    }
 
-    return edges;
+      edges.push(parts);
+    });
+
+    return { edges, errors };
   };
-
-  const sendGraphToBackend = async () => {
+    const sendGraphToBackend = async () => {
     try {
-      const edges = parseEdges(edgesText);
+      const { edges, errors } = parseEdges(edgesText);
+
+      if (errors.length > 0) {
+        setGraphResult({
+          message: "Input validation failed",
+          errors,
+        });
+        return;
+      }
 
       const response = await fetch("http://127.0.0.1:8000/graph", {
         method: "POST",
@@ -97,19 +109,41 @@ function App() {
 
       {graphResult && (
   <>
-    <h3 style={{ marginTop: "20px" }}>Planarity Result</h3>
-    <div
-      style={{
-        padding: "15px",
-        borderRadius: "8px",
-        background: graphResult.is_planar ? "#e8f5e9" : "#ffebee",
-        marginBottom: "20px",
-        fontWeight: "bold",
-        fontSize: "18px",
-      }}
-    >
-      {graphResult.result_text}
-    </div>
+    {graphResult.result_text && (
+      <>
+        <h3 style={{ marginTop: "20px" }}>Planarity Result</h3>
+        <div
+          style={{
+            padding: "15px",
+            borderRadius: "8px",
+            background: graphResult.is_planar ? "#e8f5e9" : "#ffebee",
+            marginBottom: "20px",
+            fontWeight: "bold",
+            fontSize: "18px",
+          }}
+        >
+          {graphResult.result_text}
+        </div>
+      </>
+    )}
+
+    {graphResult.errors && (
+      <>
+        <h3 style={{ marginTop: "20px" }}>Input Errors</h3>
+        <div
+          style={{
+            background: "#fff3cd",
+            padding: "15px",
+            borderRadius: "8px",
+            marginBottom: "20px",
+          }}
+        >
+          {graphResult.errors.map((error, index) => (
+            <div key={index}>{error}</div>
+          ))}
+        </div>
+      </>
+    )}
 
     <h3>Backend Response</h3>
     <pre
