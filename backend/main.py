@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import networkx as nx
 
 app = FastAPI()
 
@@ -21,17 +22,20 @@ def read_root():
 
 @app.post("/graph")
 def receive_graph(data: GraphInput):
-    vertices = set()
+    G = nx.Graph()
+    G.add_edges_from(data.edges)
 
-    for edge in data.edges:
-        if len(edge) == 2:
-            vertices.add(edge[0])
-            vertices.add(edge[1])
+    is_planar, _ = nx.check_planarity(G)
+
+    vertices = sorted(list(G.nodes()))
+    edges = [[u, v] for u, v in G.edges()]
 
     return {
-        "message": "Graph received successfully",
-        "vertices": sorted(list(vertices)),
-        "edges": data.edges,
-        "number_of_vertices": len(vertices),
-        "number_of_edges": len(data.edges),
+        "message": "Graph checked successfully",
+        "vertices": vertices,
+        "edges": edges,
+        "number_of_vertices": G.number_of_nodes(),
+        "number_of_edges": G.number_of_edges(),
+        "is_planar": is_planar,
+        "result_text": "Planar" if is_planar else "Non-planar",
     }

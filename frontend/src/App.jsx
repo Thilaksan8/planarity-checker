@@ -96,20 +96,34 @@ function App() {
       </pre>
 
       {graphResult && (
-        <>
-          <h3 style={{ marginTop: "20px" }}>Backend Response</h3>
-          <pre
-            style={{
-              background: "#f4f4f4",
-              padding: "15px",
-              borderRadius: "8px",
-              overflowX: "auto",
-            }}
-          >
-            {JSON.stringify(graphResult, null, 2)}
-          </pre>
-        </>
-      )}
+  <>
+    <h3 style={{ marginTop: "20px" }}>Planarity Result</h3>
+    <div
+      style={{
+        padding: "15px",
+        borderRadius: "8px",
+        background: graphResult.is_planar ? "#e8f5e9" : "#ffebee",
+        marginBottom: "20px",
+        fontWeight: "bold",
+        fontSize: "18px",
+      }}
+    >
+      {graphResult.result_text}
+    </div>
+
+    <h3>Backend Response</h3>
+    <pre
+      style={{
+        background: "#f4f4f4",
+        padding: "15px",
+        borderRadius: "8px",
+        overflowX: "auto",
+      }}
+    >
+      {JSON.stringify(graphResult, null, 2)}
+    </pre>
+  </>
+)}
     </div>
   );
 }
